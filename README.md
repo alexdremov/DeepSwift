@@ -32,9 +32,9 @@ assert(loss == Matrix(0))
 Element-wise operations support broadcasting similarly to numpy
 
 ```
-(Matrix<1, 5> - broadcasted -> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
+(Matrix<1, 5> -broadcasted-> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
 
-(Matrix<1, 1> - broadcasted -> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
+(Matrix<1, 1> -broadcasted-> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
 
-(Matrix<5, 1> - broadcasted -> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
+(Matrix<5, 1> -broadcasted-> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
 ```
