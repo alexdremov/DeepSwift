@@ -1,6 +1,6 @@
 # DeepSwift
 
-Build dynamic computational graphs and compute gradients
+Build dynamic computational graph with forward and backward propagation functionality
 
 ## Examples
 
