@@ -5,6 +5,7 @@ Build dynamic computational graphs and compute gradients
 ## Examples
 
 Simple SGD optimization:
+Find minimum of sum_{elements} |log(1 + x ^ 2)|
 ```swift
 import DeepSwift
 
@@ -16,8 +17,11 @@ let lr = 0.01
 var loss = try! lossGraph.forward()
 for _ in 0..<500 {
   loss = try! lossGraph.forward()
+  print(loss)
   try! lossGraph.backward()
+  
   variable.update(variable.value - lr * variable.grad!)
+  
 }
 
 assert(loss == Matrix(0))
