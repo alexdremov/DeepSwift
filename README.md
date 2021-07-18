@@ -31,7 +31,7 @@ assert(loss == Matrix(0))
 ### Bradcasting
 Element-wise operations support broadcasting similarly to numpy
 
-```
+```swift
 (Matrix<1, 5> -broadcasted-> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
 
 (Matrix<1, 1> -broadcasted-> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
@@ -41,7 +41,7 @@ Element-wise operations support broadcasting similarly to numpy
 
 ### Element-wise multiplication (Hadamard product)
 
-```
+```swift
 let a: Matrix<Int> = [
             [1, 2, 3],
             [4, 5, 6],
@@ -80,7 +80,7 @@ Graph consists of several types of elements: variables – `Input()`, constants 
 
 Simple example:
 
-```
+```swift
 let x = Input<Int>(Matrix(5), name:"Input variable")
 
 var graph:Graph = x * x + 2 * x + 5
