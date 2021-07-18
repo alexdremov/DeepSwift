@@ -112,3 +112,20 @@ Supported element-wise functions:
 - ELU
 - LeReLU
 - exp
+
+### Computing gradient
+
+Gradient is computed using backpropagation. Forward pass is required before executing backprop
+
+```swift
+let x = Input<Int>(Matrix(5), name:"Input variable")
+
+var graph:Graph = x * x + 2 * x + 5
+// Integer literals are transformed to ConstNodes
+
+try? graph.forward()
+try? graph.backward()
+
+print(x.grad!.as(Int.self) == Matrix<Int>(2 * 5 + 2))
+// d/dx(x^2 + 2 * x + 5) = 2 * x + 2
+```
