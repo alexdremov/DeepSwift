@@ -24,10 +24,28 @@ public class DotNode: Graph {
     
     public var id: UUID = UUID()
 
-    var left, right: Graph
+    var left: Graph {
+        get{
+            children[0]
+        }
+        set {
+            children[0] = newValue
+        }
+    }
+    
+    var right: Graph {
+        get{
+            children[1]
+        }
+        set {
+            children[1] = newValue
+        }
+    }
     
     public var dumpDot: String {
-        ""
+        stringFriendlyID + "[label=\"Dot\\n|{input:|output:}|{{[(\(left.shape), \(right.shape))]}|{[\(shape)]}}\"];\n" +
+            left.stringFriendlyID + " -> " + stringFriendlyID + "\n" +
+            right.stringFriendlyID + " -> " + stringFriendlyID + "\n" + left.dumpDot + right.dumpDot
     }
     
     public func forward() throws -> Matrix<MatrixDefType> {
@@ -36,25 +54,19 @@ public class DotNode: Graph {
     }
     
     public func _backward() throws {
+        
         left.grad = (left.grad ?? 0) + grad!.dot(right.frwd!.T)
-        right.grad = (right.grad ?? 0) + left.frwd!.T.dot(grad!)
+        right.grad = (right.grad ?? 0) + grad!.T.dot(left.frwd!).T
+        
+        assert(left.grad?.shape == left.shape, "Shapes mismatch: \(String(describing: left.grad?.shape)) and \(left.shape)")
+        assert(right.grad?.shape == right.shape, "Shapes mismatch: \(String(describing: right.grad?.shape)) and \(right.shape)")
     }
 
     init(_ lhs: Graph, _ rhs: Graph){
-        left = lhs
-        right = rhs
-        
         if !lhs.shape.dotable(shape: rhs.shape) {
             fatalError("Graph dimensions mismatch in dot: \(lhs.shape) and \(rhs.shape) ")
         }
         self.shape = lhs.shape.doted(rhs.shape)
         children = [lhs, rhs]
-    }
-    
-    public func regrad() {
-        grad = nil
-        for i in children {
-            i.regrad()
-        }
     }
 }

@@ -27,7 +27,7 @@ public class VarNode<T:MatrixNumber>: Graph {
     var value: Tensor<T>
 
     public var dumpDot: String {
-        ""
+        stringFriendlyID + "[label=\"Variable (\(name))\\n|{input:|output:}|{{[(–)]}|{[\(shape)]}}\"];\n"
     }
     
     public func forward() throws -> Matrix<MatrixDefType> {
@@ -37,6 +37,7 @@ public class VarNode<T:MatrixNumber>: Graph {
     
 
     public func _backward() throws {
+//        grad = Matrix<MatrixDefType>.zero(dim: shape)
     }
 
     public init(_ value: Tensor<T>, name: String = "") {
@@ -54,10 +55,6 @@ public class VarNode<T:MatrixNumber>: Graph {
             fatalError("Updated value must have the same shape")
         }
         self.value = value
-    }
-    
-    public func regrad() {
-        grad = nil
     }
 }
 

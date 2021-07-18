@@ -25,7 +25,7 @@ class ConstNode<T:MatrixNumber>: Graph & ExpressibleByIntegerLiteral  & Expressi
     var value: Tensor<T>
 
     var dumpDot: String {
-        ""
+        stringFriendlyID + "[label=\"Constant\\n|{input:|output:}|{{[(–)]}|{[\(shape)}}\"];\n"
     }
     
     public func forward() throws -> Matrix<MatrixDefType> {
@@ -34,7 +34,7 @@ class ConstNode<T:MatrixNumber>: Graph & ExpressibleByIntegerLiteral  & Expressi
     }
     
     public func _backward() throws {
-        grad = 0
+        grad = Matrix<MatrixDefType>.zero(dim: shape)
     }
 
     public init(_ val: Tensor<T>) {
@@ -53,9 +53,5 @@ class ConstNode<T:MatrixNumber>: Graph & ExpressibleByIntegerLiteral  & Expressi
         self.value = Matrix<T>(T(convertible: value))
         shape = self.value.shape
         frwd = self.value.as(MatrixDefType.self)
-    }
-    
-    public func regrad() {
-        grad = nil
     }
 }

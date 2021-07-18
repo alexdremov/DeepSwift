@@ -43,7 +43,8 @@ final class MatrixTests: XCTestCase{
             [7 + 7, 8 + 7, 9 + 7]
         ]
         
-        XCTAssertEqual((a + b).data, c.data)
+        let resTest = (a + b)
+        XCTAssertEqual(resTest.data, c.data)
         
         a = [
             [1, 2, 3],
@@ -208,6 +209,4 @@ final class MatrixTests: XCTestCase{
         XCTAssertTrue(shapeFirst.broadcastable(shape: shapeFirst))
     }
     
-    func testDot() {
-    }
 }

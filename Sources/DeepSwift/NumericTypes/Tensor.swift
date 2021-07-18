@@ -6,11 +6,10 @@
 //
 
 import Foundation
-import NDArray
 import Accelerate
 
 public typealias Tensor = Matrix
-public typealias MatrixDefType = Float
+public typealias MatrixDefType = Double
 public typealias MatrixNumber = FloatConvertible & AdditiveArithmetic & Numeric & Comparable
 infix operator **: MultiplicationPrecedence
 
@@ -328,14 +327,9 @@ public struct Matrix<T:MatrixNumber>:
     
     public static func **(lhs:Matrix, rhs:FloatConvertible) -> Matrix {
         // TODO: binpow
-        return Matrix(internalData: lhs.data.map{$0 * T(convertible: rhs)}, dim: lhs.shape)
-    }
-    
-    public static func **(lhs:Matrix, rhs:Matrix) -> Matrix<MatrixDefType> {
-        // TODO: binpow
-        return generalOp(lhs: lhs, rhs: rhs) { first, second in
-            MatrixDefType(convertible: pow(first, second))
-        }
+        return Matrix(internalData: lhs.data.map{
+            T(convertible: Foundation.pow(MatrixDefType(convertible: $0), MatrixDefType(convertible: rhs)))
+        }, dim: lhs.shape)
     }
     
     public static prefix func -(lhs:Matrix) -> Matrix {
@@ -345,26 +339,42 @@ public struct Matrix<T:MatrixNumber>:
     }
     
     public static func zero(dim: Shape) -> Matrix<T> {
-        return Matrix<T>(internalData: Array(repeating: T.zero, count: dim.row * dim.col), dim: dim)
+        return Matrix<T>.generated(dim: dim){_, _ in
+            0
+        }
     }
     
     public static func zero(dim:Int) -> Matrix<T> {
-        return Matrix<T>(internalData: Array(repeating: T.zero, count: dim * dim), dim: Shape(row: dim, col: dim))
+        return Matrix<T>.zero(dim: Shape(dim, dim))
+    }
+    
+    public static func ones(dim: Shape) -> Matrix<T> {
+        return Matrix<T>.generated(dim: dim){_, _ in
+            1
+        }
+    }
+    
+    public static func ones(dim:Int) -> Matrix<T> {
+        return Matrix<T>.ones(dim: Shape(dim, dim))
     }
     
     public static func eye(dim:Int) -> Matrix<T> {
-        var data = Array(repeating: Array(repeating: T.zero, count: dim), count: dim)
-        for i in 0..<dim {
-            for j in 0..<dim {
-                data[i][j] = 1
-            }
+        return Matrix<T>.generated(dim: Shape(dim, dim)){i, j in
+            (i == j) ? 1: 0
         }
-        return Matrix<T>(internalData: data)
     }
     
     public static func random(dim:Shape, generator: () -> T) -> Matrix<T> {
+        return Matrix<T>.generated(dim: dim){_, _ in
+            generator()
+        }
+    }
+    
+    public static func generated(dim:Shape, generator: (Int, Int) -> T) -> Matrix<T> {
         let data = Array(repeating: T.zero, count: dim.col * dim.row)
-        return Matrix<T>(internalData: data.map{_ in generator()}, dim: dim)
+        return Matrix<T>(internalData:
+                            zip(data, 0..<(dim.col * dim.row)).map{_, ind in generator(ind / dim.col, ind % dim.col)},
+                         dim: dim)
     }
     
     var `T`:Matrix {
@@ -487,6 +497,36 @@ public struct Matrix<T:MatrixNumber>:
     
     public func broadcastable<S>(matrix: Matrix<S>) -> Bool {
         broadcastable(shape: matrix.shape)
+    }
+    
+    public func downcast(row: Int, col:Int) throws -> Matrix {
+        if shape.row == row && shape.col == col {
+            return self
+        }
+        if row == 1 && col == shape.col {
+            return Matrix(internalData: Array(data[0..<col]), dim: Shape(1, col))
+        } else if col == 1 && row == shape.row {
+            var res:[T] = []
+            for i in 0..<row {
+                res.append(data[i * shape.col])
+            }
+            return Matrix(internalData: res, dim: Shape(row, 1))
+        } else {
+            throw MatrixError.broadcastingError("Cannot downcast \(shape) to \(Shape(row: row, col: col))")
+        }
+    }
+    
+    public func reduceMean(shape: Shape) throws -> Matrix {
+        if shape == Shape(1, 1) {
+            return (sum() / (self.shape.col * self.shape.row)).as(T.self)
+        } else if shape == Shape(1, self.shape.col) {
+            return reduceSum(axis: 1)
+        } else if shape == Shape(self.shape.row, 1) {
+            return reduceSum(axis: 0)
+        } else if shape == self.shape {
+            return self
+        }
+        throw MatrixError.broadcastingError("Cannot reduceMean \(self.shape) to \(shape)")
     }
 }
 
