@@ -31,7 +31,7 @@ assert(loss == Matrix(0))
 ### Bradcasting
 Element-wise operations support broadcasting similarly to numpy
 
-```
+```swift
 (Matrix<1, 5> -broadcasted-> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
 
 (Matrix<1, 1> -broadcasted-> Matrix<5, 5>) * Matrix<5, 5> = Matrix<5, 5>
@@ -41,7 +41,9 @@ Element-wise operations support broadcasting similarly to numpy
 
 ### Element-wise multiplication (Hadamard product)
 
-```
+
+```swift
+>>>>>>> 59e92956adc06c5edd582af59bba47f05761ddf6
 let a: Matrix<Int> = [
             [1, 2, 3],
             [4, 5, 6],
@@ -81,6 +83,9 @@ Graph consists of several types of elements: variables – `Input()`, constants 
 Simple example:
 
 ```
+=======
+```swift
+>>>>>>> 59e92956adc06c5edd582af59bba47f05761ddf6
 let x = Input<Int>(Matrix(5), name:"Input variable")
 
 var graph:Graph = x * x + 2 * x + 5
@@ -112,3 +117,38 @@ Supported element-wise functions:
 - ELU
 - LeReLU
 - exp
+
+### Computing gradient
+
+Gradient is computed using backpropagation. Forward pass is required before executing backprop
+
+```swift
+let x = Input<Int>(Matrix(5), name:"Input variable")
+
+var graph:Graph = x * x + 2 * x + 5
+// Integer literals are transformed to ConstNodes
+
+try? graph.forward()
+try? graph.backward()
+
+print(x.grad!.as(Int.self) == Matrix<Int>(2 * 5 + 2))
+// d/dx(x^2 + 2 * x + 5) = 2 * x + 2
+```
+
+Partial derivatives are supported 
+
+```swift
+let x = Input<Int>(Matrix(5), name:"x")
+let y = Input<Int>(Matrix(7), name:"y")
+
+var graph:Graph = x * y + ConstNode<Int>(2) * (x + y) + ConstNode<Int>(5) * y
+// Integer literals are transformed to ConstNodes
+
+try? graph.forward()
+try? graph.backward()
+
+print(x.grad!.as(Int.self) == Matrix<Int>(7 + 2))
+print(y.grad!.as(Int.self) == Matrix<Int>(5 + 2 + 5))
+// d/dx(x * y + 2 * (x + y) + 5 * y) = y + 2
+// d/dy(x * y + 2 * (x + y) + 5 * y) = x + 2 + 5
+```
