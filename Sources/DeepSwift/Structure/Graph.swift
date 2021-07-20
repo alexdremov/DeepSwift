@@ -38,8 +38,8 @@ public func -(lhs: Graph, rhs: Graph) -> AddNode {
     AddNode(lhs, ConstNode<Int>(-1) * rhs)
 }
 
-public func /(lhs: Graph, rhs: Graph) -> MulNode {
-    MulNode(lhs, rhs ** ConstNode<Int>(-1))
+public func /(lhs: Graph, rhs: Graph) -> DivNode {
+    DivNode(lhs, rhs)
 }
 
 public func **(lhs: Graph, rhs: Graph) -> PowNode {

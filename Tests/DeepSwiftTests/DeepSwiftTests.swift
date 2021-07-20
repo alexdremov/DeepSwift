@@ -122,10 +122,24 @@ final class DeepSwiftTests: XCTestCase {
         var graph: Graph = x * y + ConstNode<Int>(2) * (x + y) + ConstNode<Int>(5) * y
         // Integer literals are transformed to ConstNodes
         
-        _ = try? graph.forward()
-        try? graph.backward()
+        _ = try! graph.forward()
+        try! graph.backward()
         
         XCTAssertTrue(x.grad!.as(Int.self) == Matrix<Int>(7 + 2))
         XCTAssertTrue(y.grad!.as(Int.self) == Matrix<Int>(5 + 2 + 5))
     }
+    
+    func testSimpleDivision() {
+        let x = Input<Int>(Matrix(5), name: "x")
+        let y = Input<Int>(Matrix(7), name: "y")
+        
+        var graph: Graph = x * ConstNode<Int>(2) + x / y + ConstNode<Int>(5) * y
+        
+        _ = try! graph.forward()
+        try! graph.backward()
+        
+        XCTAssertEqual(y.grad!.sum()[0,0], Matrix<MatrixDefType>(5 - 5 / (7 * 7)).sum()[0,0], accuracy: 1e-6)
+        XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(2 + 1 / 7).sum()[0,0], accuracy: 1e-6)
+    }
+    
 }
