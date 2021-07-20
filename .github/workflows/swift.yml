@@ -19,4 +19,4 @@ jobs:
       run: swift test --enable-code-coverage -v
     - name: Codecov
       run: xcrun llvm-cov export -format="lcov" .build/debug/DeepSwiftPackageTests.xctest/Contents/MacOS/DeepSwiftPackageTests -instr-profile .build/debug/codecov/default.profdata > info.lcov
-           bash <(curl https://codecov.io/bash)
+           bash <(curl -s https://codecov.io/bash)
