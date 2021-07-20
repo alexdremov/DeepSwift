@@ -43,7 +43,6 @@ Element-wise operations support broadcasting similarly to numpy
 
 
 ```swift
->>>>>>> 59e92956adc06c5edd582af59bba47f05761ddf6
 let a: Matrix<Int> = [
             [1, 2, 3],
             [4, 5, 6],
@@ -82,10 +81,7 @@ Graph consists of several types of elements: variables – `Input()`, constants 
 
 Simple example:
 
-```
-=======
 ```swift
->>>>>>> 59e92956adc06c5edd582af59bba47f05761ddf6
 let x = Input<Int>(Matrix(5), name:"Input variable")
 
 var graph:Graph = x * x + 2 * x + 5
