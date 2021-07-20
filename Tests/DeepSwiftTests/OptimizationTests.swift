@@ -278,4 +278,56 @@ final class OptimisationTests: XCTestCase {
 
         XCTAssertEqual(try! neuron.forward()[0, 0], 0, accuracy: 1e-6)
     }
+    
+    func testTanhOptimisation() {
+        let x = Input<MatrixDefType>(Matrix.random(dim: Shape(1, 1),
+                                                   generator: {MatrixDefType.random(in: 1..<2)}), name: "input")
+
+        var neuron: Graph = (x * x).tanh()
+        let lr = 0.1
+
+        for _ in 0..<500 {
+            let loss = try! neuron.forward()
+            XCTAssertTrue((loss)[0, 0] >= 0)
+            try! neuron.backward()
+
+            x.update(x.value - x.grad! * lr)
+        }
+
+        XCTAssertEqual((try! neuron.forward())[0, 0], 0, accuracy: 1e-6)
+    }
+    
+    func testEluOptimisation() {
+        let x = Input<MatrixDefType>(Matrix.random(dim: Shape(1, 1),
+                                                   generator: {MatrixDefType.random(in: 4..<5)}), name: "input")
+
+        var neuron: Graph = (x).elu()
+        let lr = 10
+
+        for _ in 0..<1000 {
+            let loss = try! neuron.forward()
+            try! neuron.backward()
+
+            x.update(x.value - x.grad! * lr)
+        }
+
+        XCTAssertEqual((try! neuron.forward())[0, 0], -1, accuracy: 1e-2)
+    }
+    
+    func testLeReLUOptimisation() {
+        let x = Input<MatrixDefType>(Matrix.random(dim: Shape(1, 1),
+                                                   generator: {MatrixDefType.random(in: 1..<2)}), name: "input")
+
+        var neuron: Graph = (x).lerelu()
+        let lr = 10
+
+        for _ in 0..<1000 {
+            let loss = try! neuron.forward()
+            try! neuron.backward()
+
+            x.update(x.value - x.grad! * lr)
+        }
+
+        XCTAssertLessThan((try! neuron.forward())[0, 0], 0)
+    }
 }

@@ -86,7 +86,7 @@ extension Graph {
         }, name: "LeReLU")
     }
 
-    public func elu(k: MatrixDefType = 0.01) -> FunctionNode {
+    public func elu(k: MatrixDefType = 1) -> FunctionNode {
         FunctionNode(inp: self, shape: self.shape, functionForward: { inp in
             inp.map {
                 if $0 > 0 {

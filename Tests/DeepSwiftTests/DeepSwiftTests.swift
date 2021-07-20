@@ -142,4 +142,88 @@ final class DeepSwiftTests: XCTestCase {
         XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(2 + 1 / 7).sum()[0,0], accuracy: 1e-6)
     }
     
+    
+    func testExponent() {
+        let x = Input<Int>(Matrix(5), name: "x")
+        
+        var graph:Graph = 2 * x + x.exp() + 5 * x
+        
+        _ = try! graph.forward()
+        try! graph.backward()
+        
+        XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(2 + 5 + Foundation.exp(5.0)).sum()[0,0], accuracy: 1e-6)
+    }
+    
+    func testTanh() {
+        let x = Input<Int>(Matrix(5), name: "x")
+        
+        var graph:Graph = 2 * x + x.tanh() + 5 * x
+        
+        _ = try! graph.forward()
+        try! graph.backward()
+        
+        let tanhRes = Foundation.tanh(5.0)
+        
+        
+        XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(2 + 5 + (1 - tanhRes * tanhRes)).sum()[0,0], accuracy: 1e-6)
+    }
+    
+    func testLeReLU() {
+        let x = Input<Int>(Matrix(5), name: "x")
+        
+        var graph:Graph = 2 * x + x.lerelu() + 5 * x
+        
+        _ = try! graph.forward()
+        try! graph.backward()
+
+        XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(2 + 5 + 1).sum()[0,0], accuracy: 1e-6)
+    }
+    
+    func testLeReLUNeg() {
+        let x = Input<Int>(Matrix(-5), name: "x")
+        
+        var graph:Graph = 2 * x + x.lerelu(k: 0.1) + 5 * x
+        
+        _ = try! graph.forward()
+        try! graph.backward()
+        
+        XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(2 + 5 + 0.1).sum()[0,0], accuracy: 1e-6)
+    }
+    
+    func testElu() {
+        let x = Input<Int>(Matrix(5), name: "x")
+        
+        var graph:Graph = 2 * x + x.lerelu(k: 0.1) + 5 * x
+        
+        _ = try! graph.forward()
+        try! graph.backward()
+        
+        
+        XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(2 + 5 + 1).sum()[0,0], accuracy: 1e-6)
+    }
+    
+    func testEluNeg() {
+        let x = Input<MatrixDefType>(Matrix(-5e20), name: "x")
+        
+        var graph:Graph = 2 * x + x.elu() + 5 * x
+        
+        _ = try! graph.forward()
+        try! graph.backward()
+
+    
+        XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(2 + 5).sum()[0,0], accuracy: 1e-3)
+    }
+    
+    
+    func testTranspose() {
+        let x = Input<MatrixDefType>(Matrix(5), name: "x")
+        
+        var graph:Graph = x.T.T
+        
+        let res = try! graph.forward()
+        try! graph.backward()
+        XCTAssertEqual(res, x.value)
+
+        XCTAssertEqual(x.grad!.sum()[0,0], Matrix<MatrixDefType>(1).sum()[0,0], accuracy: 1e-3)
+    }
 }
