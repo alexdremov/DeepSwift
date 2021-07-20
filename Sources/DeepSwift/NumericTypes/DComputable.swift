@@ -25,7 +25,7 @@ extension FloatConvertible {
 }
 
 extension CGFloat: FloatConvertible {
-    public var doubleValue : Double {Double(self)}
+    public var doubleValue: Double {Double(self)}
 
     public init(convertible: FloatConvertible) {
         self = convertible.CGFloatValue
@@ -33,7 +33,7 @@ extension CGFloat: FloatConvertible {
 }
 
 extension Float: FloatConvertible {
-    public var doubleValue : Double {Double(self)}
+    public var doubleValue: Double {Double(self)}
 
     public init(convertible: FloatConvertible) {
         self = convertible.floatValue
@@ -41,7 +41,7 @@ extension Float: FloatConvertible {
 }
 
 extension Double: FloatConvertible {
-    public var doubleValue : Double {self}
+    public var doubleValue: Double {self}
 
     public init(convertible: FloatConvertible) {
         self = convertible.doubleValue
@@ -49,7 +49,7 @@ extension Double: FloatConvertible {
 }
 
 extension Int: FloatConvertible {
-    public var doubleValue : Double {Double(self)}
+    public var doubleValue: Double {Double(self)}
 
     public init(convertible: FloatConvertible) {
         self = convertible.intValue
@@ -57,4 +57,3 @@ extension Int: FloatConvertible {
 }
 
 public typealias DComputable = FloatConvertible
-
