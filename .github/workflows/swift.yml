@@ -17,16 +17,5 @@ jobs:
       run: swift build -v -j 8
     - name: Run tests
       run: swift test --enable-code-coverage -v
-    - name: swift-codecov
-      # You may pin to the exact commit or the version.
-      # uses: mattpolzin/swift-codecov-action@b50e26564536d6fe87e39b2517c5b3f475947409
-      uses: mattpolzin/swift-codecov-action@0.5.0
-      with:
-        # The location of the JSON file produced by swift test --enable-code-coverage
-        CODECOV_JSON: .build/debug/codecov/*.json
-        # true by default, but if false then will not output the whole codecov table to stdout.
-        PRINT_STDOUT: true
-        # filename by default, but if specified otherwise will apply a sort order to the test coverage table. This is only relevant if PRINT_STDOUT is true. Possible values: filename, +cov, -cov
-        SORT_ORDER: filename
-        # By default, there is no minimum coverage. Set this to make the script fail if the minimum coverage is not met.
-        MINIMUM_COVERAGE: 0
+    - name: Codecov
+      run: bash <(curl -s https://codecov.io/bash)
