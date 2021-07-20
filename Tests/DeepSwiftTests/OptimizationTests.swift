@@ -135,8 +135,8 @@ final class OptimisationTests: XCTestCase {
             var train: [[MatrixDefType]] = []
             var targets: [[MatrixDefType]] = []
 
-            for _ in 0..<5 {
-                let (x, y) = (MatrixDefType.random(in: -20...20), MatrixDefType.random(in: -20...20))
+            for _ in 0..<15 {
+                let (x, y) = (MatrixDefType.random(in: -1...1), MatrixDefType.random(in: -1...1))
                 train.append([x, y])
                 targets.append([funcPredicted(x: x, y: y) ? 1.0: 0.0])
             }
@@ -172,7 +172,7 @@ final class OptimisationTests: XCTestCase {
 
         let lr = 0.05
 
-        for epoch in 0..<2000 {
+        for epoch in 0..<1000 {
             let loss = try! neuron.forward()
 //            print("Epoch \(epoch): \(loss)")
 
@@ -181,8 +181,15 @@ final class OptimisationTests: XCTestCase {
             w.update(w.value - lr * w.grad!)
             b.update(b.value - lr * b.grad!)
         }
+        
+        
+        let trainMatrixFull = Matrix<MatrixDefType>(internalData: train)
+        let testMatrix = Matrix<MatrixDefType>(internalData: target)
+        let predictor = ((ConstNode(trainMatrixFull) * w).reduceSum(axis: 0) + b).sigmoid()
+        
+        let predictions = (try! predictor.forward()).as(Int.self)
 
-        XCTAssertEqual(try! neuron.forward()[0, 0], 0, accuracy: 1e-2)
+        XCTAssertEqual(predictions, testMatrix.as(Int.self))
     }
 
     func testLinearApproximation() {
