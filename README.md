@@ -1,4 +1,5 @@
 # DeepSwift
+[![codecov](https://codecov.io/gh/AlexRoar/DeepSwift/branch/main/graph/badge.svg?token=yq5czbVKrC)](https://codecov.io/gh/AlexRoar/DeepSwift)
 
 Build dynamic computational graph with forward and backward propagation functionality
 
